@@ -1,0 +1,34 @@
+version: '3'
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.2
+    environment:
+      - discovery.type=single-node
+      - 'ES_JAVA_OPTS=-Xms512m -Xmx512m'
+      - bootstrap.memory_lock=true
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - '9200:9200'
+    volumes:
+      - ~/elasticdata:/usr/share/elasticsearch/data
+      # - ./custom_elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.10.2
+    depends_on:
+      - elasticsearch
+    ports:
+      - '5601:5601'
+    environment:
+      SERVER_NAME: kibana.example.org
+      ELASTICSEARCH_HOSTS: 'http://elasticsearch:9200'
+  elasticapm:
+    image: docker.elastic.co/apm/apm-server:7.10.2
+    ports:
+      - '8200:8200'
+    depends_on:
+      - elasticsearch
+    volumes:
+      - ./apm-server.docker.yml:/usr/share/apm-server/apm-server.yml"

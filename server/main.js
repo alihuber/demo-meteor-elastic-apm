@@ -2,7 +2,8 @@ import Agent from 'meteor/kschingiz:meteor-elastic-apm';
 
 // more configuration here: https://www.elastic.co/guide/en/apm/agent/nodejs/current/advanced-setup.html#configuring-the-agent
 Agent.start({
-  serviceName: "meteor-demo-app"
+  serviceName: 'meteor-demo-app',
+  serverUrl: 'http://localhost:8200',
 });
 
 import { Meteor } from 'meteor/meteor';
@@ -11,38 +12,38 @@ import { HTTP } from 'meteor/http';
 
 Meteor.startup(() => {
   // showcase of outgoing HTTP request
-  HTTP.get("https://google.com", function(){
-    console.log(done);
+  HTTP.get('https://google.com', function () {
+    // console.log(done);
   });
 });
 
 const TestCollection = new Meteor.Collection('testCollection');
 
 Meteor.methods({
-  testExceptionHandling: function(){
-    throw new Error("TestExceptionHandling");
+  testExceptionHandling: function () {
+    throw new Error('TestExceptionHandling');
   },
-  testRequestsUsingHTTP: function(){
-    const res = HTTP.get("https://google.com");
+  testRequestsUsingHTTP: function () {
+    const res = HTTP.get('https://google.com');
     return res;
   },
-  testCollectionInsert: function(){
+  testCollectionInsert: function () {
     TestCollection.insert({
-      value: Math.random()
+      value: Math.random(),
     });
 
     // TODO: Catch meteor calls inside meteor calls
-    Meteor.call("testRequestsUsingHTTP", function(){
-      console.log("testRequestsUsingHTTP");
+    Meteor.call('testRequestsUsingHTTP', function () {
+      console.log('testRequestsUsingHTTP');
     });
   },
-  testCollectionInsertAsync: function(){
+  testCollectionInsertAsync: function () {
     const Future = require('fibers/future');
     const future = new Future();
 
     Meteor.setTimeout(() => {
       TestCollection.insert({
-        value: Math.random()
+        value: Math.random(),
       });
 
       future.return();
@@ -50,14 +51,14 @@ Meteor.methods({
 
     future.wait();
   },
-  testCollectionRemove: function(){
+  testCollectionRemove: function () {
     const docToRemove = TestCollection.findOne();
 
-    if(docToRemove){
+    if (docToRemove) {
       TestCollection.remove({ _id: docToRemove._id });
     }
   },
-  testCustomAPMEvents: function(){
+  testCustomAPMEvents: function () {
     const transaction = Agent.startTransaction('myCustomTransaction', 'custom');
     const span = Agent.startSpan('mySpan', 'custom');
 
@@ -66,7 +67,7 @@ Meteor.methods({
       span.end();
       transaction.end();
     });
-  }
+  },
 });
 
 Meteor.publish('testPublication', () => {

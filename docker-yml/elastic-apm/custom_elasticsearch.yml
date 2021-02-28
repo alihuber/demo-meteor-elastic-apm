@@ -1,0 +1,7 @@
+################################### Memory ####################################
+
+# ElasticSearch performs poorly when JVM starts swapping: you should ensure that
+# it _never_ swaps.
+#
+# Set this property to true to lock the memory:
+#
