@@ -1,0 +1,54 @@
+# https://github.com/edemaine/kadira-compose/blob/master/docker-compose.yml
+# https://github.com/vladgolubev/kadira
+# https://gist.github.com/6uimorais/1e1de20bbbb2a04fe19fc73f88d6a25f#file-changeplan-md
+# https://github.com/meteor-factory/kadira-server
+# https://github.com/kadira-io
+# https://medium.com/@foodfitnesscode/setting-up-kadira-on-a-ubuntu-16-04-server-part-1-a821cdddd1e6
+# https://github.com/lampewebdev/kadira-server
+
+version: '2'
+
+services:
+  mongo:
+    ## Mongo database for both kadira-engine and kadira-ui
+    image: mongo:3.4
+    volumes:
+      - '~/mongodb-kadira-data:/data/db'
+    # - mongo:/data
+    command: mongod --smallfiles --replSet kadira
+    ports:
+      - '27017:27017'
+    restart: always
+  kadira-engine:
+    image: vladgolubev/kadira-engine
+    ports:
+      - '11011:11011'
+    environment:
+      - PORT=11011
+      - MONGO_URL=mongodb://mongo/kadira?replicaSet=kadira
+      - MONGO_SHARD_URL_one=mongodb://mongo/kadira?replicaSet=kadira
+    links:
+      - mongo
+    restart: always
+
+  kadira-rma:
+    ## This computes statistics databases every minute.
+    image: vladgolubev/kadira-rma
+    environment:
+      - MONGO_URL=mongodb://mongo/kadira
+    links:
+      - mongo
+    restart: always
+
+  kadira-ui:
+    ## Meteor app that presents the Kadira user interface.
+    image: vladgolubev/kadira-ui
+    ports:
+      #- "80:4000"
+      - '4000:4000'
+    environment:
+      - MONGO_URL=mongodb://mongo/kadira
+      - MONGO_SHARD_URL_one=mongodb://mongo/kadira
+    links:
+      - mongo
+    restart: always

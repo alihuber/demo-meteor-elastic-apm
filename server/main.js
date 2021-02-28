@@ -1,10 +1,10 @@
-import Agent from 'meteor/kschingiz:meteor-elastic-apm';
+// import Agent from 'meteor/kschingiz:meteor-elastic-apm';
 
 // more configuration here: https://www.elastic.co/guide/en/apm/agent/nodejs/current/advanced-setup.html#configuring-the-agent
-Agent.start({
-  serviceName: 'meteor-demo-app',
-  serverUrl: 'http://localhost:8200',
-});
+// Agent.start({
+//   serviceName: 'meteor-demo-app',
+//   serverUrl: 'http://localhost:8200',
+// });
 
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
